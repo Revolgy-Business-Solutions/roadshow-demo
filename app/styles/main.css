@@ -77,3 +77,9 @@ body {
     border-bottom: 0;
   }
 }
+.well {
+  margin-bottom: 10px;
+}
+.search-button {
+  margin-bottom: 10px;
+}

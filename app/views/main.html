@@ -1,36 +1,70 @@
 <div class="header">
-  <ul class="nav nav-pills pull-right">
-    <li class="active"><a ng-href="#">Home</a></li>
-    <li><a ng-href="#">About</a></li>
-    <li><a ng-href="#">Contact</a></li>
-  </ul>
-  <h3 class="text-muted">roadshowdemo</h3>
+  <h3 class="text-muted">Roadshow Demo</h3>
 </div>
 
-<div class="jumbotron">
-  <h1>'Allo, 'Allo!</h1>
-  <p class="lead">
-    <img src="images/yeoman.png" alt="I'm Yeoman"><br>
-    Always a pleasure scaffolding your apps.
-  </p>
-  <p><a class="btn btn-lg btn-success" ng-href="#">Splendid!<span class="glyphicon glyphicon-ok"></span></a></p>
-</div>
-
-<div class="row marketing">
-  <h4>HTML5 Boilerplate</h4>
-  <p>
-    HTML5 Boilerplate is a professional front-end template for building fast, robust, and adaptable web apps or sites.
-  </p>
-
-  <h4>Angular</h4>
-  <p>
-    AngularJS is a toolset for building the framework most suited to your application development.
-  </p>
-
-  <h4>Karma</h4>
-  <p>Spectacular Test Runner for JavaScript.</p>
+<div class="row ng-scope">
+  <div class="col-md-12">
+    <div class="widget wviolet">
+      <h4 class="pull-left">List Of REPLACEME</h4>
+      <div class="clearfix"></div>
+      <div class="widget-content">
+        <form name="searchForm" class="well form-inline ng-pristine ng-valid" ng-submit="filterItems()" novalidate="">
+          <div class="row">
+            <div class="form-group col-sm-4">
+              <label class="control-label">column1</label>
+              <input type="text" class="form-control ng-pristine ng-valid" ng-model="searchForm.column1" placeholder="E.g. Andrew">
+            </div>
+            <div class="form-group col-sm-4">
+              <label class="control-label">column2</label>
+              <input type="text" class="form-control ng-pristine ng-valid" ng-model="searchForm.column2" placeholder="E.g. MTC100001">
+            </div>
+          </div>
+        </form>
+        <button type="submit" class="btn btn-primary search-button" ng-click="filterItems()">Search</button>
+        <div class="pull-right" ng-show="itemsCount > 0">
+          {{itemsCount}} items found.
+        </div>
+        <div class="clearfix"></div>
+        <div class="table-responsive">
+          <table class="table table-bordered table-striped">
+            <thead>
+              <tr>
+                <th>column1</th>
+                <th>column2</th>
+                <th>column3</th>
+                <th>column4</th>
+                <th>column5</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr ng-hide="items.length > 0" class="ng-hide">
+                <td colspan="5">Nothing has been found.</td>
+              </tr>
+              <tr ng-show="items.length > 0" ng-repeat="item in items" class="ng-scope">
+                <td>
+                  {{item.column1}}
+                </td>
+                <td>
+                  {{item.column2}}
+                </td>
+                <td>
+                  {{item.column3}}
+                </td>
+                <td>
+                  {{item.column4}}
+                </td>
+                <td>
+                  <span class="label label-success">{{item.column5}}</span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
 
 <div class="footer">
-  <p><span class="glyphicon glyphicon-heart"></span> from the Yeoman team</p>
+  <p><span class="glyphicon glyphicon-heart"></span> from the Netmail team</p>
 </div>
