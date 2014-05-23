@@ -1,5 +1,5 @@
 application: roadshow-demo
-version: 01-minimal
+version: 02-bigquery
 runtime: python27
 api_version: 1
 threadsafe: true
@@ -61,3 +61,5 @@ handlers:
   - url: /.*
     script: main.app
     secure: always
+    # without login required users.get_current_user() returns None
+    login: required

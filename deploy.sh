@@ -7,6 +7,6 @@ fi
 
 appid=$1
 c="appcfg.py --oauth2 update -A $appid ."
-echo "\nrunning command: '$c'\n"
+echo -e "\nrunning command: '$c'\n"
 $c
-echo "\n\ndeploy to >>$appid<< appspot instance finished."
+echo -e "\n\ndeploy to >>$appid<< appspot instance finished."
