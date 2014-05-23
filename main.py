@@ -68,10 +68,6 @@ class BigQueryHandler(webapp2.RequestHandler):
         # OBTAIN THE KEY FROM THE GOOGLE APIs CONSOLE
         # More instructions here: http://goo.gl/w0YA0
         #f = file('privatekey.p12', 'rb')
-        # did edit the file ... (formatting ...) ->
-        # File "/base/data/home/runtimes/python27/python27_lib/versions/third_party/pycrypto-2.6/Crypto/PublicKey/RSA.py", line 588, in _importKeyDER
-        # raise ValueError("RSA key format is not supported")
-        # ValueError: RSA key format is not supported
         f = file('privatekey.pem', 'rb')
 
         # issue with the key:
@@ -85,6 +81,12 @@ class BigQueryHandler(webapp2.RequestHandler):
         # there is link
         # https://www.googleapis.com/robot/v1/metadata/x509/89371161002@developer.gserviceaccount.com
         # -> storing the cert as privatekey.pem
+
+        # did edit (before still complaining about format) the privatekey.pem file ... (formatting ...) ->
+        # File "/base/data/home/runtimes/python27/python27_lib/versions/third_party/pycrypto-2.6/Crypto/PublicKey/RSA.py", line 588, in _importKeyDER
+        # raise ValueError("RSA key format is not supported")
+        # ValueError: RSA key format is not supported
+
         key = f.read()
         f.close()
         SERVICE_ACCOUNT_EMAIL = "roadshow-demo@appspot.gserviceaccount.com"
@@ -92,8 +94,7 @@ class BigQueryHandler(webapp2.RequestHandler):
             SERVICE_ACCOUNT_EMAIL,
             key,
             scope='https://www.googleapis.com/auth/bigquery')
-        http = httplib2.Http()
-        http = credentials.authorize(http)
+        http = credentials.authorize(httplib2.Http())
         bq_service = build("bigquery", "v2", http=http)
         # or projectId="roadshow-demo" project number?
         bq_service.jobs().query(projectId="roadshow-demo", body=self.configuration).execute()
