@@ -61,45 +61,29 @@ class BigQueryHandler(webapp2.RequestHandler):
         msg = "BIGQUERY WITH CREDENTIALS for: %s" % users.get_current_user().email()
         log.info(msg)
 
-        # Click on "API Access" on the left, then "Create an OAuth2.0 client ID".
-        # Choose Service Accounts and click on Create Client ID.
-        # -> do screenshots, the one for "public api access -> create new key are useless"
+        # Developer Console:
+        #   CREATE NEW CLIENT ID (Service a/c) -> stores keys
+        #   openssl commands starting on .p12 file
+        #       [must be right set, otherwise getting various format, pycrypto errors ...]
+        #   pass privatekey.pem and SERVICE_ACCOUNT_EMAIL
+        #   https://developers.google.com/bigquery/docs/authorization#service-accounts-server
+        #
 
-        # OBTAIN THE KEY FROM THE GOOGLE APIs CONSOLE
-        # More instructions here: http://goo.gl/w0YA0
-        #f = file('privatekey.p12', 'rb')
         f = file('privatekey.pem', 'rb')
-
-        # issue with the key:
-        # 'PKCS12 format is not supported by the PyCrpto library. '
-        # NotImplementedError: PKCS12 format is not supported by the PyCrpto library.
-        # Try converting to a "PEM":
-        # (openssl pkcs12 -in xxxxx.p12 -nodes -nocerts > privatekey.pem) or using PyOpenSSL if native code is an option.
-
-        # another issue: running the command reuqires password, don't have it
-        # downloading client secret JSON,
-        # there is link
-        # https://www.googleapis.com/robot/v1/metadata/x509/89371161002@developer.gserviceaccount.com
-        # -> storing the cert as privatekey.pem
-
-        # did edit (before still complaining about format) the privatekey.pem file ... (formatting ...) ->
-        # File "/base/data/home/runtimes/python27/python27_lib/versions/third_party/pycrypto-2.6/Crypto/PublicKey/RSA.py", line 588, in _importKeyDER
-        # raise ValueError("RSA key format is not supported")
-        # ValueError: RSA key format is not supported
-
         key = f.read()
         f.close()
-        SERVICE_ACCOUNT_EMAIL = "roadshow-demo@appspot.gserviceaccount.com"
+        CLIENT_EMAIL_FROM_CLIENT_SECRET = "89371161002-fureagtsc40aihlo6aqgk20ub9j3pcpf@developer.gserviceaccount.com"
         credentials = SignedJwtAssertionCredentials(
-            SERVICE_ACCOUNT_EMAIL,
+            CLIENT_EMAIL_FROM_CLIENT_SECRET,
             key,
             scope='https://www.googleapis.com/auth/bigquery')
         http = credentials.authorize(httplib2.Http())
         bq_service = build("bigquery", "v2", http=http)
         # or projectId="roadshow-demo" project number?
-        bq_service.jobs().query(projectId="roadshow-demo", body=self.configuration).execute()
+        response = bq_service.jobs().query(projectId="roadshow-demo", body=self.configuration).execute()
         log.info("BQ done")
         self.response.out.write(msg)
+        self.response.out.write(response)
 
 
 routes = [
