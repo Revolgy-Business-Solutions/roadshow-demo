@@ -3,7 +3,6 @@
 Google Cloud Road Show demo.
 
 Main application file.
-    - minimal, single-routed application
 
 """
 
@@ -21,9 +20,9 @@ sys.path.insert(0, LIB_PROJECT_DIR)
 
 from apiclient.discovery import build
 import httplib2
-from oauth2client.client import SignedJwtAssertionCredentials
+from oauth2client.appengine import AppAssertionCredentials
 
-# TODO
+# TODO, on 01 branch:
 # 1) show JSON stuff on one
 # 2) add time and personal greeting (users)
 # 3) simplify app.yaml as much as possible
@@ -38,7 +37,11 @@ class RequestHandler(webapp2.RequestHandler):
 
 
 class BigQueryHandler(webapp2.RequestHandler):
-    q = "SELECT count(1) FROM [publicdata:samples.wikipedia]"
+    # SELECT count(1) FROM [publicdata:samples.github_timeline]  :  6219749
+    # SELECT count(DISTINCT repository_language) FROM [publicdata:samples.github_timeline]  :  90
+    # SELECT repository_language FROM [publicdata:samples.github_timeline] GROUP BY repository_language ORDER BY repository_language
+    # q = "SELECT count(1) FROM [publicdata:samples.wikipedia]"
+    q = "SELECT repository_language FROM [publicdata:samples.github_timeline] GROUP BY repository_language ORDER BY repository_language"
     configuration = {
         'timeoutMs': 10 * 1000,
         'kind': 'query',
@@ -47,36 +50,12 @@ class BigQueryHandler(webapp2.RequestHandler):
         'query': q,
     }
 
-    def bigquery_no_auth(self):
-        msg = "BIGQUERY NO AUTH for: %s" % users.get_current_user().email()
-        log.info(msg)
-        # passing no credentials:
-        # HttpError: <HttpError 401 when requesting https://www.googleapis.com/bigquery/v2/projects/roadshow-demo/queries?alt=json returned "Login Required">
-        http = httplib2.Http()
-        bq_service = build("bigquery", "v2", http=http)
-        bq_service.jobs().query(projectId="roadshow-demo", body=self.configuration).execute()
-        self.response.out.write(msg)
-
     def bigquery(self):
         msg = "BIGQUERY WITH CREDENTIALS for: %s" % users.get_current_user().email()
         log.info(msg)
 
-        # Developer Console:
-        #   CREATE NEW CLIENT ID (Service a/c) -> stores keys
-        #   openssl commands starting on .p12 file
-        #       [must be right set, otherwise getting various format, pycrypto errors ...]
-        #   pass privatekey.pem and SERVICE_ACCOUNT_EMAIL
-        #   https://developers.google.com/bigquery/docs/authorization#service-accounts-server
-        #
-
-        f = file('privatekey.pem', 'rb')
-        key = f.read()
-        f.close()
-        CLIENT_EMAIL_FROM_CLIENT_SECRET = "89371161002-fureagtsc40aihlo6aqgk20ub9j3pcpf@developer.gserviceaccount.com"
-        credentials = SignedJwtAssertionCredentials(
-            CLIENT_EMAIL_FROM_CLIENT_SECRET,
-            key,
-            scope='https://www.googleapis.com/auth/bigquery')
+        credentials = AppAssertionCredentials(scope=[
+        'https://www.googleapis.com/auth/bigquery',])
         http = credentials.authorize(httplib2.Http())
         bq_service = build("bigquery", "v2", http=http)
         # or projectId="roadshow-demo" project number?
@@ -94,10 +73,6 @@ routes = [
     webapp2.Route(r"/greeting",
                   handler="main.RequestHandler:greeting",
                   name="greeting",
-                  methods=["GET", ]),
-    webapp2.Route(r"/bigquerynoauth",
-                  handler="main.BigQueryHandler:bigquery_no_auth",
-                  name="bigquerynoauth",
                   methods=["GET", ]),
     webapp2.Route(r"/bigquery",
                   handler="main.BigQueryHandler:bigquery",
