@@ -3,11 +3,13 @@
 Google Cloud Road Show demo.
 
 Main application file.
-    - minimal, single-routed application
+
+Minimal application, routes.
 
 """
 
 
+import json
 import logging as log
 import datetime
 
@@ -15,18 +17,19 @@ import webapp2
 from google.appengine.api import users
 
 
-# TODO
-# 1) show JSON stuff on one
-# 2) add time and personal greeting (users)
-# 3) simplify app.yaml as much as possible
 class RequestHandler(webapp2.RequestHandler):
     def index(self):
-        msg = "index AAA"
+        msg = "current datetime: %s" % datetime.datetime.now()
         log.info(msg)
         self.response.out.write(msg)
 
     def greeting(self):
-        print "greeting AAA"
+        resp = dict(datetime=str(datetime.datetime.now()),
+                    currentuser=users.get_current_user().email())
+        log.info(resp)
+        # returns JSON
+        self.response.headers["Content-Type"] = "application/json"
+        self.response.out.write(json.dumps(resp))
 
 
 routes = [
