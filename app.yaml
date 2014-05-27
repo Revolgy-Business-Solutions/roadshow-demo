@@ -1,5 +1,5 @@
 application: roadshow-demo
-version: 02-bigquery
+version: 03-endpoints
 runtime: python27
 api_version: 1
 threadsafe: true
@@ -11,6 +11,9 @@ libraries:
     version: latest
   - name: pycrypto
     version: latest
+  - name: endpoints
+    version: latest
+
 
 skip_files:
   - ^(.*/)?#.*#
@@ -25,7 +28,12 @@ skip_files:
   - ^app/bower_components/.*
   - ^node_modules/.*
 
+
 handlers:
+  # Endpoints API path
+  - url: /_ah/spi/.*
+    script: main.endpoints_launcher
+
   - url: /.*
     script: main.app
     secure: always

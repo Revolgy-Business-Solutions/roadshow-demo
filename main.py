@@ -23,10 +23,13 @@ sys.path.insert(0, LIB_PROJECT_DIR)
 from apiclient.discovery import build
 import httplib2
 from oauth2client.appengine import AppAssertionCredentials
+import endpoints
+from protorpc import messages
+from protorpc import message_types
+from protorpc import remote
 
 
-class BigQueryHandler(webapp2.RequestHandler):
-
+class BigQueryService(object):
     configuration = {
         "timeoutMs": 10 * 1000,
         "kind": "query",
@@ -39,19 +42,88 @@ class BigQueryHandler(webapp2.RequestHandler):
     http = credentials.authorize(httplib2.Http())
     bq_service = build("bigquery", "v2", http=http)
 
-    def github_info(self):
+    def github_info(self, repo_lang=None):
         # list languages by number of repositories
         q = ("SELECT COUNT(repository_language) as counter, repository_language FROM "
-             "[githubarchive:github.timeline] GROUP BY repository_language ORDER BY counter DESC")
-        log.info("running bigquery ...")
+             "[githubarchive:github.timeline] %(where)s GROUP BY repository_language ORDER BY counter DESC")
+        where = "WHERE repository_language='%s'" % repo_lang if repo_lang else ''
+        q = q % dict(where=where)
+        log.info("running bigquery '%s' ..." % q)
         # projectId to connect opportune billing to (mandatory)
         self.configuration["query"] = q
         response = self.bq_service.jobs().query(projectId="roadshow-demo",
                                                 body=self.configuration).execute()
+        log.info("bigquery finished.")
+        return response
+
+
+class BigQueryHandler(webapp2.RequestHandler):
+
+    def github_info(self):
+        bq_service = BigQueryService()
         # returns JSON
+        response = bq_service.github_info()
         self.response.headers["Content-Type"] = "application/json"
         self.response.out.write(json.dumps(response))
         log.info("bigquery finished.")
+
+
+class RepoQuery(messages.Message):
+    repo_lang = messages.StringField(1, required=True)
+
+
+class SingleRepoResponse(messages.Message):
+    repo_counter = messages.StringField(1, required=True)
+    repo_lang = messages.StringField(2, required=True)
+
+
+class ReposResponse(messages.Message):
+    repos = messages.MessageField(SingleRepoResponse, 1, repeated=True)
+
+
+@endpoints.api(name="github",
+               version="v1",
+               description="Github API",
+               # possible access control via client_id
+               # config.settings.client_id if generated
+               allowed_client_ids=[endpoints.API_EXPLORER_CLIENT_ID])
+class GithubBQApi(remote.Service):
+    @endpoints.method(message_types.VoidMessage,
+                      ReposResponse,
+                      name="repos",
+                      path="repos",
+                      http_method="GET")
+    def repos(self, _):
+        bq_service = BigQueryService()
+        # result["schema"]["fields"][0]["name"] is "counter"
+        # result["schema"]["fields"][1]["name"] is "repository_language"
+        result = bq_service.github_info()
+        resp = ReposResponse()
+        resp.repos = []
+        for lang in result["rows"]:
+            resp_row = SingleRepoResponse()
+            resp_row.repo_counter = lang["f"][0]["v"]
+            # str() b/c of opportune empty/null values
+            resp_row.repo_lang = str(lang["f"][1]["v"])
+            resp.repos.append(resp_row)
+        return resp
+
+    @endpoints.method(RepoQuery,
+                      SingleRepoResponse,
+                      name="repo",
+                      path="repo",
+                      http_method="GET")
+    def repo(self, repo_query):
+        bq_service = BigQueryService()
+        result = bq_service.github_info(repo_lang=repo_query.repo_lang)
+        log.debug(result)
+        resp = SingleRepoResponse()
+        resp.repo_counter = result["rows"][0]["f"][0]["v"]
+        resp.repo_lang = result["rows"][0]["f"][1]["v"]
+        return resp
+
+
+endpoints_launcher = endpoints.api_server([GithubBQApi])
 
 
 routes = [
