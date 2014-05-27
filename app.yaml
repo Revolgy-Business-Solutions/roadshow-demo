@@ -12,9 +12,6 @@ libraries:
   - name: pycrypto
     version: latest
 
-
-# how much of this can be eliminated for the minimal app?
-
 skip_files:
   - ^(.*/)?#.*#
   - ^(.*/)?.*~
@@ -29,37 +26,9 @@ skip_files:
   - ^node_modules/.*
 
 handlers:
-  # Partials
-  # ------
-  - url: /partials/(.*\.html)
-    static_files: site/app/partials/\1
-    upload: site/app/partials/(.*\.html)
-
-  # Styles
-  # ------
-  - url: /css/(.*\.css)
-    static_files: site/app/css/\1
-    upload: site/app/css/(.*\.css)
-
-  # Images
-  # ------
-  - url: /img/(.*)
-    static_files: site/app/img/\1
-    upload: site/app/img/(.*)
-
-  # Javascript, flash, extensions
-  # -----------------------------
-  - url: /js/(.*)
-    static_files: site/app/js/\1
-    expiration: "1s"
-    upload: site/app/js/(.*)
-
-  - url: /lib/(.*)
-    static_files: site/app/lib/\1
-    upload: site/app/lib/(.*)
-
   - url: /.*
     script: main.app
     secure: always
-    # without login required users.get_current_user() returns None
+    # necessary, otherwise, even if logged in,
+    # users.get_current_user() responds None
     login: required
