@@ -118,6 +118,10 @@ class GithubBQApi(remote.Service):
         result = bq_service.github_info(repo_lang=repo_query.repo_lang)
         log.debug(result)
         resp = SingleRepoResponse()
+        if result["totalRows"] == '0':
+            resp.repo_counter = "n/a"
+            resp.repo_lang = "n/a"
+            return resp
         resp.repo_counter = result["rows"][0]["f"][0]["v"]
         resp.repo_lang = result["rows"][0]["f"][1]["v"]
         return resp
@@ -127,7 +131,7 @@ endpoints_launcher = endpoints.api_server([GithubBQApi])
 
 
 routes = [
-    webapp2.Route(r"/githubinfo",
+    webapp2.Route(r'/',
                   handler="main.BigQueryHandler:github_info",
                   name="githubinfo",
                   methods=["GET", ]),
