@@ -29,16 +29,13 @@
           <table class="table table-bordered table-striped">
             <thead>
               <tr>
-                <th>column1</th>
-                <th>column2</th>
-                <th>column3</th>
-                <th>column4</th>
-                <th>column5</th>
+                <th>Language</th>
+                <th>Count</th>
               </tr>
             </thead>
             <tbody>
               <tr ng-hide="items.length > 0" class="ng-hide">
-                <td colspan="5">Nothing has been found.</td>
+                <td colspan="2">Nothing has been found.</td>
               </tr>
               <tr ng-show="items.length > 0" ng-repeat="item in items" class="ng-scope">
                 <td>
@@ -47,18 +44,12 @@
                 <td>
                   {{item.column2}}
                 </td>
-                <td>
-                  {{item.column3}}
-                </td>
-                <td>
-                  {{item.column4}}
-                </td>
-                <td>
-                  <span class="label label-success">{{item.column5}}</span>
-                </td>
               </tr>
             </tbody>
           </table>
+        </div>
+        <div class="row">
+          <div id="holder"></div>
         </div>
       </div>
     </div>
