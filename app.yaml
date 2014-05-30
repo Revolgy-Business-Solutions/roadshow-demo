@@ -1,5 +1,5 @@
 application: roadshow-demo
-version: 03-endpoints
+version: 04-frontend
 runtime: python27
 api_version: 1
 threadsafe: true
