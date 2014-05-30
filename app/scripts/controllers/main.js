@@ -22,20 +22,34 @@ angular.module('roadshowdemoApp')
        });
     }
 
-    var loadItems = function (items) {
+    $scope.loadItems = function (items) {
       $scope.items = []
       for (var i = 0; i < items.length; i++) {
         $scope.items.push({
-          language: items[i]['f'][1],
-          count: items[i]['f'][0]
+          language: items[i]['f'][1]['v'],
+          count: items[i]['f'][0]['v']
         });
       };
       $scope.itemsCount = items.length;
+      $scope.showStatistics();
     }
 
+    $scope.filterItems();
+
     $scope.showStatistics = function() {
+      var piechartValues = [];
+      var piechartLabels = [];
+      for (var i = 0; i < 10; i++) {
+        piechartValues.push(parseInt($scope.items[i]['count']));
+        piechartLabels.push('%%.%% - ' + $scope.items[i]['language']);
+      }
+
+      console.log('values and labels');
+      console.log(piechartValues);
+      console.log(piechartLabels);
+
       var r = Raphael("holder"),
-      pie = r.piechart(320, 175, 100, [55, 20, 13, 32, 5, 1, 2, 10], { legend: ["%%.%% - Enterprise Users", "IE Users"], legendpos: "west", href: ["http://raphaeljs.com", "http://g.raphaeljs.com"]});
+      pie = r.piechart(320, 175, 100, piechartValues, { legend: piechartLabels, legendpos: "west", href: ["http://raphaeljs.com", "http://g.raphaeljs.com"]});
 
       r.text(320, 50, "Top 10 Languages").attr({ font: "20px sans-serif" });
       pie.hover(function () {

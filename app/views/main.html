@@ -5,10 +5,10 @@
 <div class="row ng-scope">
   <div class="col-md-12">
     <div class="widget wviolet">
-      <h4 class="pull-left">List Of REPLACEME</h4>
+      <h4 class="pull-left">List Of Languages</h4>
       <div class="clearfix"></div>
       <div class="widget-content">
-        <form name="searchForm" class="well form-inline ng-pristine ng-valid" ng-submit="filterItems()" novalidate="">
+        <!-- <form name="searchForm" class="well form-inline ng-pristine ng-valid" ng-submit="filterItems()" novalidate="">
           <div class="row">
             <div class="form-group col-sm-4">
               <label class="control-label">column1</label>
@@ -19,7 +19,7 @@
               <input type="text" class="form-control ng-pristine ng-valid" ng-model="searchForm.column2" placeholder="E.g. MTC100001">
             </div>
           </div>
-        </form>
+        </form> -->
         <button type="submit" class="btn btn-primary search-button" ng-click="filterItems()">Search</button>
         <div class="pull-right" ng-show="itemsCount > 0">
           {{itemsCount}} items found.
@@ -39,10 +39,10 @@
               </tr>
               <tr ng-show="items.length > 0" ng-repeat="item in items" class="ng-scope">
                 <td>
-                  {{item.column1}}
+                  {{item.language}}
                 </td>
                 <td>
-                  {{item.column2}}
+                  {{item.count}}x
                 </td>
               </tr>
             </tbody>
