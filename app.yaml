@@ -13,6 +13,8 @@ libraries:
     version: latest
   - name: endpoints
     version: latest
+  - name: jinja2
+    version: latest
 
 
 skip_files:
@@ -33,6 +35,100 @@ handlers:
   # Endpoints API path
   - url: /_ah/spi/.*
     script: main.endpoints_launcher
+
+  # Images
+  # ------
+  - url: /images/(.*\.png)
+    static_files: app/images/\1
+    upload: app/images/(.*\.png)
+    mime_type: image/png
+
+  - url: /img/(.*\.jpe?g)
+    static_files: site/images/\1
+    upload: site/images/(.*\.jpe?g)
+    mime_type: image/jpeg
+
+  - url: /images(.*\.webp)
+    static_files: app/images/\1
+    upload: app/images/(.*\.webp)
+    mime_type: image/webp
+
+  - url: /images/(.*)
+    static_files: app/images/\1
+    upload: app/images/(.*)
+
+  # Partials
+  # ------
+  - url: /views/(.*\.html)
+    static_files: app/views/\1
+    upload: app/views/(.*\.html)
+
+  # Styles
+  # ------
+  - url: /styles/(.*\.css)
+    static_files: app/styles/\1
+    upload: app/styles/(.*\.css)
+
+  # Javascript, flash, extensions
+  # -----------------------------
+  - url: /scripts/(.*)
+    static_files: app/scripts/\1
+    upload: app/scripts/(.*)
+
+  # Bower files.
+  - url: /bower_components/(.*)
+    static_files: bower_components/\1
+    upload: bower_components/(.*)
+
+  # Vendor files.
+  - url: /vendor/(.*)
+    static_files: app/vendor/\1
+    upload: app/vendor/(.*)
+
+ # Fonts
+  # -----
+  - url: /fonts/(.*\.woff)
+    static_files: app/fonts/\1
+    upload: app/fonts/(.*.\woff)
+    mime_type: application/x-font-woff
+    # https://github.com/h5bp/html5-boilerplate/issues/273
+    # http://code.google.com/p/chromium/issues/detail?id=70283
+    # http://stackoverflow.com/questions/3594823/mime-type-for-woff-fonts
+    expiration: 1d
+    http_headers:
+      Access-Control-Allow-Origin: '*'
+
+  - url: /font/(.*\.svg|.*\.svgz)
+    static_files: app/fonts/\1
+    upload: app/fonts/(.*.\svg|.*\.svgz)
+    mime_type: image/svg+xml
+    expiration: 1d
+    http_headers:
+      Access-Control-Allow-Origin: '*'
+
+  - url: /fonts/(.*\.ttf)
+    static_files: app/fonts/\1
+    upload: app/fonts/(.*.\ttf)
+    mime_type: font/ttf
+    expiration: 1d
+    http_headers:
+      Access-Control-Allow-Origin: '*'
+
+  - url: /fonts/(.*\.otf)
+    static_files: app/fonts/\1
+    upload: app/fonts/(.*.\otf)
+    mime_type: font/otf
+    expiration: 1d
+    http_headers:
+      Access-Control-Allow-Origin: '*'
+
+  - url: /fonts/(.*\.eot)
+    static_files: app/fonts/\1
+    upload: app/fonts/(.*.\eot)
+    mime_type: application/vnd.ms-fontobject
+    expiration: 1d
+    http_headers:
+      Access-Control-Allow-Origin: '*'
 
   - url: /.*
     script: main.app

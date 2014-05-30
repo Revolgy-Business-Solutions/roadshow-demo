@@ -15,6 +15,7 @@ import sys
 import logging as log
 
 import webapp2
+from webapp2_extras import jinja2
 
 # make google API client libraries available
 LIB_PROJECT_DIR = os.path.join(os.path.dirname(__file__), "lib")
@@ -66,6 +67,14 @@ class BigQueryHandler(webapp2.RequestHandler):
         self.response.headers["Content-Type"] = "application/json"
         self.response.out.write(json.dumps(response))
         log.info("bigquery finished.")
+
+    @webapp2.cached_property
+    def jinja2(self):
+        return jinja2.get_jinja2(app=self.app)
+
+    def frontend(self):
+        data = dict()
+        self.response.out.write(self.jinja2.render_template("index.html", **data))
 
 
 class RepoQuery(messages.Message):
@@ -131,12 +140,31 @@ endpoints_launcher = endpoints.api_server([GithubBQApi])
 
 
 routes = [
-    webapp2.Route(r'/',
+    webapp2.Route(r'/githubinfo',
                   handler="main.BigQueryHandler:github_info",
                   name="githubinfo",
+                  methods=["GET", ]),
+    webapp2.Route(r'/',
+                  handler="main.BigQueryHandler:frontend",
+                  name="frontend",
                   methods=["GET", ]),
 ]
 
 
+# Configure webapp2, templates
+webapp2_config = {}
+webapp2_config['webapp2_extras.jinja2'] = dict(
+    template_path='app',
+    #globals=dict(is_local=is_local),
+    environment_args=dict(autoescape=True,
+                          block_start_string='<%',
+                          block_end_string='%>',
+                          variable_start_string='%%',
+                          variable_end_string='%%',
+                          comment_start_string='<#',
+                          comment_end_string='#>'),
+    )
+
+
 # application instance
-app = webapp2.WSGIApplication(routes=routes, debug=True)
+app = webapp2.WSGIApplication(routes=routes, debug=True, config=webapp2_config)
