@@ -155,15 +155,13 @@ routes = [
 webapp2_config = {}
 webapp2_config['webapp2_extras.jinja2'] = dict(
     template_path='app',
-    #globals=dict(is_local=is_local),
     environment_args=dict(autoescape=True,
                           block_start_string='<%',
                           block_end_string='%>',
                           variable_start_string='%%',
                           variable_end_string='%%',
                           comment_start_string='<#',
-                          comment_end_string='#>'),
-    )
+                          comment_end_string='#>'),)
 
 
 # application instance
