@@ -21,7 +21,8 @@ class RequestHandler(webapp2.RequestHandler):
     def index(self):
         msg = "current datetime: %s" % datetime.datetime.now()
         log.info(msg)
-        self.response.out.write(msg)
+        self.response.out.write("<br /><br /><center><h1>" + msg +
+                                "</h1></center>")
 
     def greeting(self):
         resp = dict(datetime=str(datetime.datetime.now()),

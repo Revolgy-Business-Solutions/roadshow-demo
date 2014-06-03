@@ -19,9 +19,6 @@ skip_files:
   - ^(.*/)?.*\.sw[op]
   - ^(.*/)?.*/RCS/.*
   - ^(.*/)?\..*
-  - ^site/coffeescript/.*
-  - ^site/stylus/.*
-  - ^scripts/.*
   - ^app/bower_components/.*
   - ^node_modules/.*
 
@@ -29,6 +26,6 @@ handlers:
   - url: /.*
     script: main.app
     secure: always
-    # necessary, otherwise, even if loged in,
+    # necessary, otherwise, even if logged in,
     # users.get_current_user() responds None
     login: required
