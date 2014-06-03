@@ -19,9 +19,6 @@ skip_files:
   - ^(.*/)?.*\.sw[op]
   - ^(.*/)?.*/RCS/.*
   - ^(.*/)?\..*
-  - ^site/coffeescript/.*
-  - ^site/stylus/.*
-  - ^scripts/.*
   - ^app/bower_components/.*
   - ^node_modules/.*
 

@@ -55,7 +55,7 @@ class BigQueryHandler(webapp2.RequestHandler):
 
 
 routes = [
-    webapp2.Route(r"/githubinfo",
+    webapp2.Route(r'/',
                   handler="main.BigQueryHandler:github_info",
                   name="githubinfo",
                   methods=["GET", ]),
