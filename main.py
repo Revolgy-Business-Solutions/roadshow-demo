@@ -36,7 +36,7 @@ class BigQueryHandler(webapp2.RequestHandler):
 
     credentials = AppAssertionCredentials(
         scope=["https://www.googleapis.com/auth/bigquery"])
-    http = credentials.authorize(httplib2.Http())
+    http = credentials.authorize(httplib2.Http(timeout=30))
     bq_service = build("bigquery", "v2", http=http)
 
     def github_info(self):
